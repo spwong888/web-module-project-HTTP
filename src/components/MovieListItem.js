@@ -11,7 +11,7 @@ const MovieListItem = (props) => {
     <td>{metascore}</td>
     <td>
       <Link to={`/movies/${id}`} className="view">
-        <input type="button" className="btn btn-secondary" value="View" />
+        <input type="button" className="btn btn-secondary" value="View Details" />
       </Link>
     </td>
   </tr>);

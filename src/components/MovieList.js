@@ -27,6 +27,7 @@ const MovieList = (props) => {
         </tbody>
       </table>
       <MovieFooter totalMovies={movies.length} />
+      <FavoriteMovieList favoriteMovies={favoriteMovies} />
     </div>
   );
 }

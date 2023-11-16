@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
 import axios from 'axios';
 
 const EditMovieForm = (props) => {
@@ -23,15 +22,43 @@ const EditMovieForm = (props) => {
     });
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Make your put request here
-    // On success, set the updated movies in state
-    // and also navigate the app to the updated movie path
+    try {
+      const response = await axios.put(`http://localhost:9000/api/movies/${id}`, movie);
+      
+      const updatedMovie = response.data;
+
+      setMovies((prevMovies) => {
+        const updatedMovies = prevMovies.map((m) =>
+          m.id === updatedMovie.id ? updatedMovie : m
+        );
+        return updatedMovies;
+      });
+
+      navigate(`/movies/${id}`);
+    } catch (error) {
+      console.error("Error updating movie:", error);
+    }
   }
 
   const { title, director, genre, metascore, description } = movie;
 
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchMovieData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:9000/api/movies/${id}`);
+        setMovie(response.data);
+      } catch (error) {
+        console.error("Error fetching movie data:", error);
+      }
+    };
+
+    fetchMovieData();
+  }, [id]);
+  
   return (
     <div className="col">
       <div className="modal-content">

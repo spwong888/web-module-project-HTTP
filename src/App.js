@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-
 import { Route, Routes, Navigate } from "react-router-dom";
 import MovieList from './components/MovieList';
 import Movie from './components/Movie';
-
+import EditMovieForm from './components/EditMovieForm'; 
 import MovieHeader from './components/MovieHeader';
-
 import FavoriteMovieList from './components/FavoriteMovieList';
-
 import axios from 'axios';
+import { Link } from "react-router-dom";
 
-const App = (props) => {
+const App = () => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
 
@@ -24,42 +22,45 @@ const App = (props) => {
       });
   }, []);
 
-  const deleteMovie = (id) => {
-    // Make a DELETE request using Axios
-    // On success update the movies list in state
-    // and navigate the user to /movies
-    // Hand this function down to the correct component
-  }
+  const deleteMovie = async (id) => {
+    try {
+      await axios.delete(`http://localhost:9000/api/movies/${id}`);
+      setMovies(movies.filter(movie => movie.id !== id));
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+    }
+  };
 
   const addToFavorites = (movie) => {
-    // Stretch goal, see the README
+    setFavoriteMovies([...favoriteMovies, movie]);
+    // You can update favoriteMovies state accordingly
   }
 
   return (
     <div>
       <nav className="navbar navbar-dark bg-dark">
-        <span className="navbar-brand" > HTTP / CRUD Module Project</span>
+        <span className="navbar-brand">HTTP / CRUD Module Project</span>
       </nav>
 
       <div className="container">
         <MovieHeader />
-        <div className="row ">
+        <div className="row">
           <FavoriteMovieList favoriteMovies={favoriteMovies} />
 
+          <Link to="/movies" className="btn btn-primary">View All Movies</Link>
+      <Link to="/movies/add" className="btn btn-success">
+        <i className="material-icons">&#xE147;</i> <span>Add New Movie</span>
+      </Link>
           <Routes>
-            <Route path="movies/edit/:id" />
-
-            <Route path="movies/:id" />
-
-            <Route path="movies" element={<MovieList movies={movies} />} />
-
-            <Route path="/" element={<Navigate to="/movies" />} />
+            <Route path="movies/edit/:id" element={<EditMovieForm setMovies={setMovies} />} />
+            <Route path="movies/:id" element={<Movie addToFavorites={addToFavorites} />} />
+            <Route path="movies" element={<MovieList movies={movies} deleteMovie={deleteMovie} />} />
+            <Route path="/" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>
     </div>
   );
 };
-
 
 export default App;
